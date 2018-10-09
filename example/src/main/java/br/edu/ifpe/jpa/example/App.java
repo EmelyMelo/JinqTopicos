@@ -2,6 +2,7 @@ package br.edu.ifpe.jpa.example;
 
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -103,10 +104,16 @@ public class App {
 	// 7. Imprima na tela a média de posts existentes nos blogs
 	public void questaoSete() {
 		helper.execute(Blog.class, streams -> {
-			streams
-				.select(b -> b.getPosts())
-				.avg(b -> b.getPosts());
-		});
+			return streams
+					.where(b->b.getName().equals(tituloBlog))
+					.collect(Collectors.toList())
+					.get(0)
+					.getPosts()
+					.stream()
+					.filter(p -> p.getCreationDate().before(dataFinal) && p.getCreationDate().after(dataInicial))
+					.map(p -> p.getTitle())
+					.collect(Collectors.toList());
+				});
 
 	}
 }
